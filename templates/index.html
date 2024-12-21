@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trippy Wizard</title>
-    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-purple-100">
     <div id="root"></div>
     
+    {% raw %}
     <script type="text/babel">
         function App() {
             const [step, setStep] = React.useState(0);
@@ -127,7 +128,7 @@
                         </h1>
                         
                         {!forecast ? (
-                            <>
+                            <div>
                                 <div className="mb-4 flex justify-between text-purple-600">
                                     <span>Question {step + 1} of {questions.length}</span>
                                     <span>{Math.round((step / questions.length) * 100)}% Complete</span>
@@ -139,7 +140,7 @@
                                     ></div>
                                 </div>
                                 {renderQuestion()}
-                            </>
+                            </div>
                         ) : (
                             <div className="space-y-6">
                                 <h2 className="text-2xl font-bold text-purple-800 mb-4">
@@ -147,7 +148,7 @@
                                 </h2>
                                 <div className="prose max-w-none">
                                     {forecast.split('\n\n').map((paragraph, index) => (
-                                        <p key={index} className="text-gray-700 leading-relaxed">
+                                        <p key={index} className="text-gray-700 leading-relaxed mb-4">
                                             {paragraph}
                                         </p>
                                     ))}
@@ -177,7 +178,9 @@
             );
         }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
+    {% endraw %}
 </body>
 </html>
