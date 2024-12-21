@@ -3,184 +3,707 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trippy Wizard</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>TrppyWzrd | Mystical AI Zodiac Forecasts</title>
+    <meta name="description" content="Get your free 3-month personalized zodiac forecast powered by advanced AI algorithms.">
+    <style>
+        :root {
+            --primary-dark: #0a0a1a;
+            --secondary-dark: #141428;
+            --text-color: #f5f5f5;
+            --accent-blue: #4f46e5;
+            --highlight: rgba(245, 245, 245, 0.1);
+            --cosmic-purple: #7c3aed;
+            --cosmic-pink: #c026d3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, var(--primary-dark) 0%, #1a1a2e 100%);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #app {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--cosmic-pink));
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.3) 100%);
+            pointer-events: none;
+        }
+
+        .wizard-logo {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #fff, #e2e8f0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.4rem;
+            max-width: 600px;
+            margin: 0 auto;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: rgba(20, 20, 40, 0.8);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(12px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+            border-color: var(--cosmic-purple);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .progress-container {
+            background: rgba(255,255,255,0.1);
+            height: 8px;
+            border-radius: 4px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cosmic-purple), var(--cosmic-pink));
+            border-radius: 4px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .question-container {
+            background: rgba(20, 20, 40, 0.9);
+            backdrop-filter: blur(16px);
+            padding: 3rem;
+            border-radius: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            min-height: 400px;
+            position: relative;
+        }
+
+        .question {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            width: 100%;
+            left: 0;
+            top: 0;
+            padding: 3rem;
+            pointer-events: none;
+        }
+
+        .question.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+        }
+
+        .question.previous {
+            transform: translateX(-50px);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 1.2rem;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 0.8rem;
+            background: rgba(10, 10, 26, 0.8);
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--cosmic-purple);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.2);
+        }
+
+        select option {
+            background: var(--secondary-dark);
+            color: var(--text-color);
+            padding: 1rem;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--cosmic-pink));
+            color: var(--text-color);
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 0.8rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+        }
+
+        .forecast {
+            background: rgba(20, 20, 40, 0.9);
+            backdrop-filter: blur(16px);
+            padding: 3rem;
+            border-radius: 1.5rem;
+            margin-top: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .forecast.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .forecast p {
+            margin-bottom: 1.8rem;
+            line-height: 1.8;
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+        }
+
+        .loading::after {
+            content: '';
+            width: 4rem;
+            height: 4rem;
+            border: 4px solid var(--text-color);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .testimonial {
+            background: rgba(20, 20, 40, 0.8);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(12px);
+            transition: transform 0.3s ease;
+        }
+
+        .testimonial:hover {
+            transform: translateY(-5px);
+        }
+
+        .testimonial::before {
+            content: '"';
+            position: absolute;
+            top: -0.5rem;
+            left: 1rem;
+            font-size: 4rem;
+            color: var(--cosmic-purple);
+            opacity: 0.3;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--cosmic-purple);
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            #app {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .header p {
+                font-size: 1.2rem;
+            }
+
+            .question-container {
+                padding: 2rem;
+            }
+
+            .question {
+                padding: 1.5rem;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-<body class="bg-purple-100">
-    <div id="root"></div>
-    
-    {% raw %}
-    <script type="text/babel">
-        function App() {
-            const [step, setStep] = React.useState(0);
-            const [answers, setAnswers] = React.useState({});
-            const [forecast, setForecast] = React.useState(null);
-            const [loading, setLoading] = React.useState(false);
+<body>
+    <div id="app">
+        <div class="header">
+            <span class="wizard-logo">🧙‍♂️</span>
+            <h1>TrppyWzrd</h1>
+            <p>Unlock Your 3-Month Destiny Forecast with Advanced AI & Ancient Wisdom</p>
+        </div>
 
-            const questions = [
-                {
-                    id: "birthday",
-                    question: "When were you born?",
-                    type: "date"
-                },
-                {
-                    id: "environment",
-                    question: "Which environment calls to your soul?",
-                    options: ["Woods", "Desert", "Ocean", "Mountains"]
-                },
-                {
-                    id: "time",
-                    question: "When do you feel most alive?",
-                    options: ["Dawn", "Midday", "Dusk", "Midnight"]
-                },
-                {
-                    id: "element",
-                    question: "Which element resonates with you?",
-                    options: ["Fire", "Water", "Earth", "Air"]
-                },
-                {
-                    id: "creature",
-                    question: "Which mythical creature would be your companion?",
-                    options: ["Dragon", "Phoenix", "Unicorn", "Griffin"]
-                },
-                {
-                    id: "color",
-                    question: "What color represents your energy?",
-                    options: ["Deep Blue", "Forest Green", "Royal Purple", "Golden Yellow"]
-                },
-                {
-                    id: "season",
-                    question: "Which season mirrors your spirit?",
-                    options: ["Spring", "Summer", "Autumn", "Winter"]
-                },
-                {
-                    id: "journey",
-                    question: "What type of journey calls to you?",
-                    options: ["Inner Discovery", "Creative Expression", "Knowledge Seeking", "Adventure"]
-                }
-            ];
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🔮</div>
+                <h3>AI-Powered Insights</h3>
+                <p>Advanced algorithms combine with zodiac wisdom for accurate predictions</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <h3>3-Month Forecast</h3>
+                <p>Detailed guidance for your next quarter's spiritual journey</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌟</div>
+                <h3>Personalized Reading</h3>
+                <p>Unique insights based on your cosmic energy alignment</p>
+            </div>
+        </div>
 
-            const handleAnswer = (answer) => {
-                setAnswers({...answers, [questions[step].id]: answer});
-                if (step < questions.length - 1) {
-                    setStep(step + 1);
-                } else {
-                    getForecast();
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div id="questionContainer" class="question-container"></div>
+
+        <div id="loadingIndicator" class="loading" style="display: none;"></div>
+
+        <div id="forecastContainer" class="forecast">
+            <div id="forecastContent"></div>
+        </div>
+
+        <div class="testimonials">
+            <div class="testimonial">
+                <p class="testimonial-text">The accuracy of my 3-month forecast was incredible. It helped me make important life decisions with confidence.</p>
+                <p class="testimonial-author">- Sarah M.</p>
+            </div>
+            <div class="testimonial">
+                <p class="testimonial-text">Combining AI with traditional zodiac readings creates surprisingly deep insights. Highly recommended!</p>
+                <p class="testimonial-author">- Michael R.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const state = {
+                currentStep: 1,
+                totalSteps: 8,
+                formData: {
+                    birthday: '',
+                    environment: '',
+                    time: '',
+                    element: '',
+                    creature: '',
+                    color: '',
+                    season: '',
+                    journey: ''
                 }
             };
 
-            const getForecast = async () => {
-                setLoading(true);
+            const questions = [
+                {
+                    id: 'birthday',
+                    label: 'When were you born?',
+                    type: 'date'
+                },
+                {
+                    id: 'environment',
+                    label: 'Which environment calls to your spirit?',
+                    type: 'select',
+                    options: [
+                        { value: 'Forest', label: 'Deep Forest' },
+                        { value: 'Ocean', label: 'Vast Ocean' },
+                        { value: 'Mountains', label: 'High Mountains' },
+                        { value: 'Desert', label: 'Ancient Desert' },
+                        { value: 'City', label: 'Night City' }
+                    ]
+                },
+                {
+                    id: 'time',
+                    label: 'When does your energy peak?',
+                    type: 'select',
+                    options: [
+                        { value: 'Dawn', label: 'Dawn' },
+                        { value: 'Noon', label: 'Noon' },
+                        { value: 'Dusk', label: 'Dusk' },
+                        { value: 'Midnight', label: 'Midnight' }
+                    ]
+                },
+                {
+                    id: 'element',
+                    label: 'Which element resonates with your soul?',
+                    type: 'select',
+                    options: [
+                        { value: 'Fire', label: 'Fire' },
+                        { value: 'Water', label: 'Water' },
+                        { value: 'Air', label: 'Air' },
+                        { value: 'Earth', label: 'Earth' },
+                        { value: 'Aether', label: 'Aether' }
+                    ]
+                },
+                {
+                    id: 'creature',
+                    label: 'Which mythical being guides your path?',
+                    type: 'select',
+                    options: [
+                        { value: 'Dragon', label: 'Dragon' },
+                        { value: 'Phoenix', label: 'Phoenix' },
+                        { value: 'Unicorn', label: 'Unicorn' },
+                        { value: 'Griffin', label: 'Griffin' },
+                        { value: 'Sphinx', label: 'Sphinx' }
+                    ]
+                },
+                {
+                    id: 'color',
+                    label: 'What color embodies your energy?',
+                    type: 'select',
+                    options: [
+                        { value: 'Purple', label: 'Purple' },
+                        { value: 'Blue', label: 'Blue' },
+                        { value: 'Green', label: 'Green' },
+                        { value: 'Gold', label: 'Gold' },
+                        { value: 'Silver', label: 'Silver' }
+                    ]
+                },
+                {
+                    id: 'season',
+                    label: 'Which season awakens your spirit?',
+                    type: 'select',
+                    options: [
+                        { value: 'Spring', label: 'Spring' },
+                        { value: 'Summer', label: 'Summer' },
+                        { value: 'Autumn', label: 'Autumn' },
+                        { value: 'Winter', label: 'Winter' }
+                    ]
+                },
+                {
+                    id: 'journey',
+                    label: 'What path do you seek?',
+                    type: 'select',
+                    options: [
+                        { value: 'Wisdom', label: 'Path of Wisdom' },
+                        { value: 'Power', label: 'Path of Power' },
+                        { value: 'Love', label: 'Path of Love' },
+                        { value: 'Creation', label: 'Path of Creation' },
+                        { value: 'Mystery', label: 'Path of Mystery' }
+                    ]
+                }
+            ];
+
+            const questionContainer = document.getElementById('questionContainer');
+            const progressBar = document.getElementById('progressBar');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const forecastContainer = document.getElementById('forecastContainer');
+            const forecastContent = document.getElementById('forecastContent');
+
+            function updateProgress() {
+                const progress = (state.currentStep / state.totalSteps) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+
+            function createQuestionElement(question) {
+                const div = document.createElement('div');
+                div.className = 'question';
+                
+                const label = document.createElement('label');
+                label.htmlFor = question.id;
+                label.textContent = question.label;
+                div.appendChild(label);
+
+                if (question.type === 'date') {
+                    const input = document.createElement('input');
+                    input.type = 'date';
+                    input.id = question.id;
+                    input.required = true;
+                    input.value = state.formData[question.id];
+                    input.addEventListener('change', (e) => {
+                        state.formData[question.id] = e.target.value;
+                        updateButtons();
+                    });
+                    div.appendChild(input);
+                } else if (question.type === 'select') {
+                    const select = document.createElement('select');
+                    select.id = question.id;
+                    select.required = true;
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Choose wisely...';
+                    select.appendChild(defaultOption);
+
+                    question.options.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.label;
+                        select.appendChild(optionElement);
+                    });
+
+                    select.value = state.formData[question.id];
+                    select.addEventListener('change', (e) => {
+                        state.formData[question.id] = e.target.value;
+                        updateButtons();
+                    });
+                    div.appendChild(select);
+                }
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'button-container';
+
+                if (state.currentStep > 1) {
+                    const backButton = document.createElement('button');
+                    backButton.textContent = 'Back';
+                    backButton.addEventListener('click', previousStep);
+                    buttonContainer.appendChild(backButton);
+                }
+
+                const nextButton = document.createElement('button');
+                nextButton.textContent = state.currentStep === state.totalSteps ? 'Reveal Your Destiny' : 'Continue';
+                nextButton.disabled = !state.formData[question.id];
+                nextButton.addEventListener('click', () => {
+                    if (state.currentStep === state.totalSteps) {
+                        getForecast();
+                    } else {
+                        nextStep();
+                    }
+                });
+                buttonContainer.appendChild(nextButton);
+
+                div.appendChild(buttonContainer);
+                return div;
+            }
+
+            function updateButtons() {
+                const currentQuestion = questions[state.currentStep - 1];
+                const nextButton = questionContainer.querySelector('button:last-child');
+                if (nextButton) {
+                    nextButton.disabled = !state.formData[currentQuestion.id];
+                }
+            }
+
+            function showQuestion() {
+                const currentQuestion = questions[state.currentStep - 1];
+                questionContainer.innerHTML = '';
+                const questionElement = createQuestionElement(currentQuestion);
+                questionElement.classList.add('active');
+                questionContainer.appendChild(questionElement);
+                updateProgress();
+            }
+
+            function nextStep() {
+                if (state.currentStep < state.totalSteps) {
+                    state.currentStep++;
+                    showQuestion();
+                }
+            }
+
+            function previousStep() {
+                if (state.currentStep > 1) {
+                    state.currentStep--;
+                    showQuestion();
+                }
+            }
+
+            async function getForecast() {
+                questionContainer.style.display = 'none';
+                loadingIndicator.style.display = 'flex';
+
                 try {
                     const response = await fetch('/forecast', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
+                            'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(answers)
+                        body: JSON.stringify(state.formData)
                     });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to get forecast');
+                    }
+
                     const data = await response.json();
-                    setForecast(data.forecast);
+                    displayForecast(data.forecast);
                 } catch (error) {
                     console.error('Error:', error);
+                    displayError('Unable to generate forecast. Please try again.');
+                } finally {
+                    loadingIndicator.style.display = 'none';
                 }
-                setLoading(false);
-            };
+            }
 
-            const renderQuestion = () => {
-                const currentQuestion = questions[step];
-                return (
-                    <div className="space-y-4">
-                        <h2 className="text-2xl font-bold text-purple-800 mb-4">
-                            {currentQuestion.question}
-                        </h2>
-                        {currentQuestion.type === 'date' ? (
-                            <input
-                                type="date"
-                                onChange={(e) => handleAnswer(e.target.value)}
-                                className="p-2 border rounded-lg"
-                            />
-                        ) : (
-                            <div className="grid grid-cols-2 gap-4">
-                                {currentQuestion.options.map((option) => (
-                                    <button
-                                        key={option}
-                                        onClick={() => handleAnswer(option)}
-                                        className="p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                                    >
-                                        {option}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                );
-            };
+            function displayForecast(forecast) {
+                forecastContent.innerHTML = forecast.split('\n\n').map(p => `<p>${p}</p>`).join('');
+                forecastContainer.classList.add('visible');
+                
+                const restartButton = document.createElement('button');
+                restartButton.textContent = 'Start New Reading';
+                restartButton.addEventListener('click', restart);
+                
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'button-container';
+                buttonContainer.appendChild(restartButton);
+                
+                forecastContent.appendChild(buttonContainer);
+            }
 
-            return (
-                <div className="min-h-screen p-8">
-                    <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-8">
-                        <h1 className="text-4xl font-bold text-center text-purple-900 mb-8">
-                            🔮 Trippy Wizard
-                        </h1>
-                        
-                        {!forecast ? (
-                            <div>
-                                <div className="mb-4 flex justify-between text-purple-600">
-                                    <span>Question {step + 1} of {questions.length}</span>
-                                    <span>{Math.round((step / questions.length) * 100)}% Complete</span>
-                                </div>
-                                <div className="w-full bg-purple-200 rounded-full h-2 mb-8">
-                                    <div
-                                        className="bg-purple-600 rounded-full h-2 transition-all duration-500"
-                                        style={{width: `${(step / questions.length) * 100}%`}}
-                                    ></div>
-                                </div>
-                                {renderQuestion()}
-                            </div>
-                        ) : (
-                            <div className="space-y-6">
-                                <h2 className="text-2xl font-bold text-purple-800 mb-4">
-                                    Your 3-Month Mystical Forecast
-                                </h2>
-                                <div className="prose max-w-none">
-                                    {forecast.split('\n\n').map((paragraph, index) => (
-                                        <p key={index} className="text-gray-700 leading-relaxed mb-4">
-                                            {paragraph}
-                                        </p>
-                                    ))}
-                                </div>
-                                <button
-                                    onClick={() => {
-                                        setStep(0);
-                                        setAnswers({});
-                                        setForecast(null);
-                                    }}
-                                    className="mt-6 w-full p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                                >
-                                    Start New Reading
-                                </button>
-                            </div>
-                        )}
-                        
-                        {loading && (
-                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                                <div className="bg-white p-8 rounded-xl">
-                                    <p className="text-xl text-purple-800">🔮 Consulting the cosmic forces...</p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
-        }
+            function displayError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = message;
+                questionContainer.appendChild(errorDiv);
+                questionContainer.style.display = 'block';
+            }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+            function restart() {
+                state.currentStep = 1;
+                state.formData = {
+                    birthday: '',
+                    environment: '',
+                    time: '',
+                    element: '',
+                    creature: '',
+                    color: '',
+                    season: '',
+                    journey: ''
+                };
+                forecastContainer.classList.remove('visible');
+                questionContainer.style.display = 'block';
+                showQuestion();
+            }
+
+            // Initialize the form
+            showQuestion();
+        });
     </script>
-    {% endraw %}
 </body>
 </html>
