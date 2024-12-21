@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from anthropic import Anthropic
 import os
 from datetime import datetime
@@ -9,7 +9,7 @@ anthropic = Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
 
 @app.route('/')
 def serve_app():
-    return send_from_directory('.', 'index.html')
+    return render_template('index.html')
 
 @app.route('/forecast', methods=['POST'])
 def get_forecast():
